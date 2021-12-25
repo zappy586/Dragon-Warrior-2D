@@ -1,0 +1,50 @@
+
+un comment out the collision code from the enemy damage 
+  
+  
+  [SerializeField] private float damage;
+    [Header("Firetrap Timers")]
+    [SerializeField] private float activationDelay;
+    [SerializeField] private float activeTime ;
+    private Animator anim;
+    private SpriteRenderer spriteRend;
+
+    private bool triggered;
+    private bool active;
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
+        spriteRend = GetComponent<SpriteRenderer>();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            if (!triggered)
+               StartCoroutine(ActivateFiretrap());
+
+            if (active)
+                collision.GetComponent<Health>().TakeDamage(damage);
+        }
+    }
+
+
+    private IEnumerable ActivateFiretrap()
+    {
+        triggered = true;
+        spriteRend.color = Color.red;
+        
+        
+        
+        yield return new WaitForSeconds(activationDelay);
+        spriteRend.color = Color.white;
+        active = true;
+        anim.SetBool("activated",true);
+
+        //wait for x seconds  ,deactivate the trap and all variables are reset 
+        yield return new WaitForSeconds (activeTime);
+        triggered = false;
+        active = false;
+        anim.SetBool("activated", false);
+    }
